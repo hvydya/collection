@@ -1,4 +1,4 @@
-FROM openjdk:8-alpine
+FROM arm64v8/openjdk:8-alpine
 WORKDIR /col
 RUN addgroup -S spring && adduser -S spring -G spring
 USER spring:spring
