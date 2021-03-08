@@ -25,6 +25,7 @@ import java.util.Optional;
 @Api(value = "Collection Main", description = "CRUD Collections")
 @RestController
 @RequestMapping(path = "/api/c")
+@CrossOrigin(origins = "*")
 public class CollectionController {
 
     @Autowired
