@@ -2,6 +2,7 @@ package com.colbackend.collection.controllers;
 
 import com.colbackend.collection.dto.CreateCollection;
 import com.colbackend.collection.dto.CreateCollectionItem;
+import com.colbackend.collection.dto.EditItemDto;
 import com.colbackend.collection.exceptions.CreateCollectionItemException;
 import com.colbackend.collection.models.Collection;
 import com.colbackend.collection.models.CollectionItem;
@@ -76,6 +77,26 @@ public class CollectionController {
                 CollectionItem(createCollectionItem.getFront(),
                 createCollectionItem.getBack(), collection)).toString())).
                 orElseGet(() -> ResponseEntity.badRequest().body("Collection provided doesn't exist"));
+    }
+
+    @GetMapping("/i")
+    public ResponseEntity<List<CollectionItem>> getItemsWithIdViaName(@RequestParam("name") String name) {
+        if (name == null) return ResponseEntity.badRequest().build();
+        Optional<Collection> opt = collectionRepository.findByName(name);
+        return opt.map(collection -> ResponseEntity.ok(collectionItemRepository.findByCollectionId(collection.getId()))).
+                orElseGet(() -> ResponseEntity.badRequest().build());
+    }
+
+    @PostMapping("/i")
+    public ResponseEntity<String> editItem(@RequestBody EditItemDto editItemDto) {
+        Optional<CollectionItem> collectionItemOptional = collectionItemRepository.findById(editItemDto.getId());
+        if (collectionItemOptional.isPresent()) {
+            CollectionItem collectionItem = collectionItemOptional.get();
+            collectionItem.setBack(editItemDto.getBack());
+            collectionItem.setFront(editItemDto.getFront());
+            return ResponseEntity.ok(collectionItemRepository.save(collectionItem).toString());
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @ApiOperation(value = "Get collection via name")
